@@ -1,39 +1,20 @@
 package go_ora_test
 
 import (
-	"database/sql"
 	"fmt"
-	"log"
 	"math"
-	"os"
 	"testing"
 
 	_ "github.com/sijms/go-ora"
 	"github.com/sijms/go-ora/converters"
 )
 
-var conn *sql.DB
-
-func TestMain(m *testing.M) {
-	var err error
-	connStr := os.Getenv("GOORA_TESTDB")
-	if connStr == "" {
-		log.Fatal(fmt.Errorf("Provide  oracle server url in environment variable GOORA_TESTDB"))
-	}
-	conn, err = sql.Open("oracle", connStr)
-	if err != nil {
-		log.Fatal("cannot connect to db:", err)
-	}
-	rc := m.Run()
-
-	conn.Close()
-	os.Exit(rc)
-}
 func TestSelectBindFloat(t *testing.T) {
+
 	for _, tt := range converters.TestFloatValue {
 		t.Run(tt.SelectText, func(t *testing.T) {
 			query := fmt.Sprintf("select :1 N from dual")
-			stmt, err := conn.Prepare(query)
+			stmt, err := DB.Prepare(query)
 			if err != nil {
 				t.Errorf("Query can't be prepared: %s", err)
 				return
@@ -81,7 +62,7 @@ func TestSelectBindInt(t *testing.T) {
 		if tt.IsInteger {
 			t.Run(tt.SelectText, func(t *testing.T) {
 				query := fmt.Sprintf("select :1 N from dual")
-				stmt, err := conn.Prepare(query)
+				stmt, err := DB.Prepare(query)
 				if err != nil {
 					t.Errorf("Query can't be prepared: %s", err)
 					return
@@ -121,7 +102,7 @@ func TestSelectBindFloatAsInt(t *testing.T) {
 	for _, tt := range converters.TestFloatValue {
 		t.Run(tt.SelectText, func(t *testing.T) {
 			query := fmt.Sprintf("select :1 N from dual")
-			stmt, err := conn.Prepare(query)
+			stmt, err := DB.Prepare(query)
 			if err != nil {
 				t.Errorf("Query can't be prepared: %s", err)
 				return
@@ -171,7 +152,7 @@ func TestSelectBindIntAsFloat(t *testing.T) {
 		if tt.IsInteger {
 			t.Run(tt.SelectText, func(t *testing.T) {
 				query := fmt.Sprintf("select :1 N from dual")
-				stmt, err := conn.Prepare(query)
+				stmt, err := DB.Prepare(query)
 				if err != nil {
 					t.Errorf("Query can't be prepared: %s", err)
 					return
